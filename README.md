@@ -16,11 +16,7 @@ This project applies the Lee-Ready framework to historical daily data for ExxonM
 
 
 ## 3. Trade Labelling - Lee and Ready Algorithm 
-
-
-
-
-
+The Lee-Ready Algorithm is a hybrid classification rule that combines the Quote Rule and the Tick Test to decide whether a trade was buyer-initiated or seller-initiated. 
 
 ```` python
 def tick_test_algo(row):
@@ -42,6 +38,19 @@ def quote_rule_algo(row):
 df2['target'] = df2.apply(quote_rule_algo, axis = 1)
 
 ````
+
+### 3.1 The Quote Rule
+The algorithm starts inside quote_rule_algo(row) by looking at where the closing price sits relative to the day's midpoint boundary. 
+
+- If close > midpoint: The trade is classified immediately as Buy (1) because it is closer to the seller's asking price.
+- If close < midpoint: The trade is classified immediately as Sell (0) because it is closer to the buyer's bid price.
+
+### 3.2 The Tick Test
+If the closing price lands exactly on the midpoint, the Quote Rule becomes ambiguous. The Tick Test ignores the midpoint and instead looks backward at momentum. 
+- If price diff > 0: The price rose since the last period, so it outputs a Buy (1).
+- If price diff < 0: The price dropped since the last period, so it outputs a Sell (0).
+- If price diff = 0: The price remained completely unchanged, resulting in a missing value, which would typically be filled forward using historical context. 
+
 
 ## 4. Feature Engineering 
 
