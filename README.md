@@ -5,7 +5,7 @@
 ## 1. Introduction 
 In quantitative finance, understanding order flow - identifying whether buyers or sellers initiate trades - is critical for analyzing liquidity, price discovery, and short-term market momentum. Because standard historical datasets typically omit explicit trade direction labels, researchers rely on market microstructure rules to infer them. One of the most seminal frameworks for this is the Lee-Ready Algorithm, which dynamically combines the Quote Rule and the Tick Test to classify trades based on their positioning relative to prevailing bid-ask spreads and historical price changes. 
 
-This micro-project applies the Lee-Ready framework to historical daily data for ExxonMobil (XOM) spanning from 2023 to 2025 to generate target classification labels (Buy vs. Sell). Using engineered features derived from price fluctuations and volume indicators, we train a Random Forest Classifier to predict these trade directions. The model's predictive performance is sequentially evaluated across training and testing sets to assess its robustness, alongside an analysis of feature importances to determine the key drivers of order flow classification in a major energy equity. 
+This micro-project applies the Lee-Ready framework to historical daily data for ExxonMobil (XOM) spanning from 2023 to 2025 to generate target classification labels (Buy vs. Sell). Using engineered features derived from price fluctuations and volume indicators, we train a Random Forest Classifier to predict these trade directions. The model's predictive performance is evaluated sequentially on the training and testing sets to assess its robustness, alongside an analysis of feature importances to identify the key drivers of order-flow classification in a major energy equity. 
 
 ## 2. Objectives
 - Apply the combined logic of the Quote Rule and Tick-Test to ExxonMobil historical data to construct a robust, rule-based target label for classification.
@@ -53,7 +53,22 @@ If the closing price lands exactly on the midpoint, the Quote Rule becomes ambig
 
 
 ## 4. Feature Engineering 
+Feature engineering transforms raw historical market data into structured signals that expose the underlying dynamics of price volatility, intraday momentum, and trading intensity. By isolating these specific relationships, we provide the Random Forest classifier with contextual patterns that help it map market behaviour directly to the Lee-Ready trade classification targets. 
 
+1. `open_close_diff`: Captures intraday price direction and momentum by measuring the net change between the opening and closing prices.
+2. `high_low_diff`: Measures daily market volatility and trading range width by calculating the distance between the highest and lowest prices.
+3. `volume_change`: Tracks shifting market intensity and liquidity acceleration by calculating the daily percentage change in traded share volume.
+
+````python
+df2['open_close_diff'] = df2['open'] - df2['close']
+
+df2['high_low_diff'] = df2['high'] - df2['low']
+
+df2['volume_change'] = df2['volume'].pct_change()
+
+df2 = df2.dropna()
+
+````
 
 ## 5. Split Data 
 
